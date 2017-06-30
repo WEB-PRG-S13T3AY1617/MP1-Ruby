@@ -1,0 +1,417 @@
+<html>
+    <head><title>View Album's Photos</title>
+        <link rel="stylesheet" href="photostyle.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+    </head>
+    <script> 
+        var inputid = window.location.href.split("@")[1];
+        var albumid =  window.location.href.split("#")[1];
+        albumid = albumid.slice(0,albumid.indexOf("@"));
+        var photoid = 1;
+        var alid = 1;
+        $(document).ready(function(){
+            
+            var root = 'https://jsonplaceholder.typicode.com';
+            
+            updateAlbum(albumid);
+            
+            
+            
+            
+            
+             function updateAlbum(albumid)
+            {
+                  $.ajax({				
+                        url: root + '/albums/',
+						data: {
+							userId: inputid
+                            
+						},
+						type: "GET",
+                        dataType: "json",
+						success: function(data) {
+							if (data.Response == "False") {
+                                
+                                 console.log("false albums data");
+                            }
+							else {
+                                  
+                                $(".title_album").html(data[albumid-1].title );
+                               
+                                console.log(photoid);
+                                alid = data[albumid-1].id;
+                                loadPhoto(data[albumid-1].id);
+                                
+							}
+						}
+                    });
+               
+            }
+            
+            function loadPhoto(alid)
+            {
+                for( i = 0; i < 10;i++)
+                    updatePhoto(alid);
+                
+                
+                
+            }
+             
+            
+          
+            
+            
+             $("#more").click(function(){
+                 var ctr = photoid;
+                 if(photoid < 50)
+                 {for( i = 0; i < 10;i++)
+                         {
+                        addNewPhoto(ctr);
+                         ctr++;
+                         }
+                     loadPhoto(alid);
+
+                   $("html, body").animate({ scrollTop: $("#main-container").children().height()-60 }, "slow"); 
+                 }
+                 else
+                    $("#more").fadeOut(1000);
+             });
+            
+             function addNewPhoto(photoid)
+             {
+               
+                 var new_thumb = document.createElement("img");
+                 new_thumb.id = "thumb";
+                 
+                 new_thumb.className = "hover-shadow cursor";
+                 new_thumb.alt ="no photo loaded yet";
+                 var new_pics = document.createElement("div");
+                  new_pics.className = "pics";
+                 new_pics.id = "p"+photoid;
+                
+                 
+                 new_pics.appendChild(new_thumb);
+                 
+                 var new_slides = document.createElement("div");
+                 new_slides.className = "mySlides";
+                new_slides.setAttribute("id","s"+photoid);
+                    
+                
+                 $(new_pics).hide();
+                 $("#photobox").append(new_pics);
+                 $(".slide-container").append(new_slides);
+                 $("#photobox").height(function (index, height) {return (height + 50);});
+                
+                 $(new_pics).fadeIn(500);
+                 
+                   var new_title = document.createElement("div");
+                    new_title.className = "title";
+                    var new_uploaded = document.createElement("div");
+                    new_uploaded.className = "uploaded";
+                    var new_album = document.createElement("div");
+                    new_album.className = "albumm";
+                    var newDetails = document.createElement("div");
+                    newDetails.className = "details";
+                    new_title.textContent ="TITLE";
+                    new_uploaded.textContent ="Uploaded by";
+                  
+
+                    newDetails.setAttribute("id","t"+photoid);
+                    newDetails.appendChild(new_title);
+                    newDetails.appendChild(new_uploaded);
+                     
+                   
+                   
+                    console.log(newDetails);
+                    $(newDetails).hide();
+                    $(".details-container").append(newDetails);
+                    $(newDetails).show(0);
+                 
+                
+             }
+            function getname(photoid){
+                  
+                    $.ajax({				
+                        url: root + '/users/',
+						data: {
+							userId: inputid
+                        },
+						type: "GET",
+                        dataType: "json",
+						success: function(data) {
+							if (data.Response == "False") {
+                                
+                                 console.log("false data");
+                            }
+							else {
+                                
+                                $("#t"+photoid+" .uploaded").html("<p> Uploaded by: "+ data[inputid-1].name + "</p>");
+  
+							}
+						}
+                    
+                    }); 
+                }
+                
+               
+            function updatePhoto(id)
+            {
+                 $.ajax({				
+                            url: root + '/photos/',
+                            data: {
+                                userId: id
+
+                            },
+                            type: "GET",
+                            dataType: "json",
+                            success: function(data) {
+                                if (data.Response == "False") {
+                                   console.log("false photos ");
+                                }
+                                else {
+                                    if( photoid <= 50 )
+                                    {
+                                        $("#p"+photoid+" #thumb").attr('src', data[photoid-1].thumbnailUrl);
+                                        
+                                        $("#p"+photoid+" #thumb").attr('onclick', 'openModal();currentSlide('+photoid+')');
+                                        
+                                        
+                                        $(".slide-container #s"+ photoid).html("<img id='photo' src='"+ data[photoid-1].url + "'>");
+                                        
+                                        $("#t"+photoid+" .title").html("<p><b> Title: </b>"+ data[photoid-1].title + "</p>");
+                                        getname(photoid);                                       photoid++;
+                                        console.log("photoid "+ photoid);
+                                        
+                                
+                                    }
+                                       
+                                       
+                                }
+                            }
+                        });
+            }
+        
+            
+            
+        });
+        
+    </script>
+    <body>
+        <div id = page>
+           <div class="header"> 
+            <a href="WEBPRG%20MP.html">
+                <div class="btn"> 
+                    <div>
+                        <img id="btn" src="posts.png"/>
+                    </div>
+                    <div style = "padding: 2.4;">
+                        <h1> Timeline </h1>
+                    </div>
+                </div>
+            </a>
+            <a href="homepage.html">
+                <div class="btn"> 
+                    <div style = "padding: 2.4;">
+                        <h1> Fishbook </h1>
+                    </div>
+                </div>
+            </a>
+            <a href="AllPhotos.html">
+                <div class="btn"> 
+                    <div>
+                        <img id="btn" src="planet.png"/>
+                    </div>
+                    <div style = "padding: 2.4;">
+                        <h1> Explore </h1>
+                    </div> 
+                </div>
+            </a>
+        </div>
+
+            <div class="album">
+                <div class="album-name">View Album </div>
+                <div class = "title_album">Title</div>
+            </div>
+
+            <div id ="main-container">
+                <div id="photobox">
+                    <div class="pics" id="p1" > 
+                       <img id ="thumb" onclick="openModal();currentSlide(1)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                    <div class="pics" id="p2" >
+                       <img id ="thumb" onclick="openModal();currentSlide(2)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                    <div class="pics" id="p3" >
+                        <img id ="thumb" onclick="openModal();currentSlide(3)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                    <div class="pics" id="p4" >
+                         <img id ="thumb" onclick="openModal();currentSlide(4)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                    <div class="pics" id="p5" >
+                          <img id ="thumb" onclick="openModal();currentSlide(5)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                     <div class="pics" id="p6" >
+                         <img id ="thumb" onclick="openModal();currentSlide(6)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                    <div class="pics" id="p7" >
+                       <img id ="thumb" onclick="openModal();currentSlide(7)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                     <div class="pics" id="p8" >
+                        <img id ="thumb" onclick="openModal();currentSlide(8)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                     <div class="pics" id="p9" >
+                        <img id ="thumb" onclick="openModal();currentSlide(9)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                    <div class="pics" id="p10" >
+                         <img id ="thumb" onclick="openModal();currentSlide(10)" class="hover-shadow cursor" alt="no photo loaded yet">
+                    </div>
+                </div>
+
+                <div class = "footer" id = "more">
+                    More Pictures...
+                </div>
+            </div>
+
+            <div id="zoomed-photo">
+                <span class="close cursor" onclick="closeModal()">x</span>
+                <div class="modal-content">
+                    <div class ="slide-container">
+                        <div id="s1" class="mySlides">
+                            <img id="photo" alt="No photo loaded yet">
+                        </div>
+                        <div id="s2" class="mySlides">
+                           <img id="photo" alt="No photo loaded yet">
+                        </div>
+                        <div id="s3" class="mySlides">
+                            <img id="photo" alt="No photo loaded yet">
+                        </div>
+                        <div id="s4" class="mySlides">
+                            <img id="photo" alt="No photo loaded yet">
+                        </div>
+                        <div id="s5" class="mySlides">
+                           <img id="photo" alt="No photo loaded yet">
+                        </div>
+                        <div id="s6" class="mySlides">
+                            <img id="photo" alt="No photo loaded yet">
+                        </div>
+                        <div id="s7" class="mySlides">
+                            <img id="photo" alt="No photo loaded yet">
+                        </div>
+                        <div id="s8" class="mySlides">
+                           <img id="photo" alt="No photo loaded yet">
+                        </div>
+                        <div id="s9" class="mySlides">
+                            <img id="photo" alt="No photo loaded yet">
+                        </div>
+                        <div id="s10" class="mySlides">
+                            <img id="photo" alt="No photo loaded yet">
+                        </div>
+
+                    </div>
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+                    <div class="details-container">
+                        <div class="details" id="t1"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+                            
+                        </div>
+                        <div class="details" id="t2"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+                           
+                        </div>
+                        <div class="details" id="t3"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+                            
+                        </div>
+                         <div class="details" id="t4"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+               
+                        </div>
+                        <div class="details" id="t5"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+                   
+                        </div>
+                        <div class="details" id="t6"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+                           
+                        </div>
+                         <div class="details" id="t7"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+                           
+                        </div>
+                        <div class="details" id="t8"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+                            
+                        </div>
+                        <div class="details" id="t9"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+                            
+                        </div>
+                        <div class="details" id="t10"> 
+                            <div class="title"> title </div>
+                            <div class="uploaded"> uploaded by </div>
+                            
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <script>
+            function openModal() {
+                document.getElementById('zoomed-photo').style.display = "block";
+            }
+            function closeModal() {
+                document.getElementById('zoomed-photo').style.display = "none";
+            }
+
+            var slideIndex = 1;
+            showSlides(slideIndex);
+
+            function plusSlides(n) {
+                showSlides(slideIndex += n);
+            }
+
+            function currentSlide(n) {
+                showSlides(slideIndex = n);
+            }
+            
+            function showSlides(n) {
+                var i;
+                var slides = document.getElementsByClassName("mySlides");
+                var capt = document.getElementsByClassName("details");
+                
+                if (n > slides.length)
+                    slideIndex = 1
+                if (n < 1) 
+                    slideIndex = slides.length
+                for (i = 0; i < slides.length; i++)
+                    slides[i].style.display = "none";
+                for (i = 0; i < capt.length; i++)
+                    capt[i].style.display = "none";
+                
+                
+                slides[slideIndex-1].style.display = "block";
+                
+                capt[slideIndex-1].style.display = "block";
+                
+                var captionText = captionText = capt.valueOf();
+               
+                
+            }
+        </script>
+    </body>
+</html>

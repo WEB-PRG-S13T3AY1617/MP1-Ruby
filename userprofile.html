@@ -1,0 +1,403 @@
+<html>
+	<head><title>User Profile</title>
+		<link rel="stylesheet" href="userstyle.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+        
+	</head>
+     <script>
+          var inputid = window.location.href.split("#")[1];
+         var idnum =1; 
+        
+         $(document).ready(function() {
+         $("html, body").animate({ scrollTop: 0 }, "fast"); 
+             var root = 'https://jsonplaceholder.typicode.com';
+           
+                
+             $.ajax({				
+                        url: root + '/users/',
+						data: {
+							userId: inputid
+						},
+						type: "GET",
+                        dataType: "json",
+						success: function(data) {
+							if (data.Response == "False") {
+                                
+                                 console.log("false users data");
+                            }
+							else {
+                               $(".name_text").html("<p>" +data[inputid-1].name + "</p>");
+                                 $(".uname").html("<p>@" +data[inputid-1].username + "</p>");
+                                
+                                $(".email").html("<p><span>Email : </span>" +data[inputid-1].email + "</p>");
+                                 $(".phone").html("<p><span>Phone : </span>" +data[inputid-1].phone + "</p>");
+                                $(".website").html("<p><span>Website : </span>" +data[inputid-1].website + "</p>");
+                                 $(".add_container").html("<p>" +data[inputid-1].address.street+", "+data[inputid-1].address.suite+"<br>"+ data[inputid-1].address.city+"     "+data[inputid-1].address.zipcode+ "</p>");
+                                 $(".cname").html("<p>"+ data[inputid-1].company.name+ "</p>");
+                                 $(".cphrase").html("<p>"+ data[inputid-1].company.catchPhrase+ "</p>");
+                                 $(".bs").html("<p>"+ data[inputid-1].company.bs+ "</p>");
+                                
+                                
+                              
+                            
+							}
+						}
+             });
+            
+            for(idnum=1;idnum <= 5; idnum++)
+            {
+                update(idnum);
+            }
+           $("html, body").animate({ scrollTop: 0 }, "fast"); 
+             
+            $(".more").click(function loadpost()
+             {
+                 
+                 var i =1;
+                 if(idnum <10)
+                 for(i=1;i <= 5; i++)
+                {
+                  
+                    addNewPost(idnum); 
+                    idnum++;
+                   
+                }
+             
+               
+               $("html, body").animate({ scrollTop: $("#post_container").children().height() }, "slow"); 
+             });
+             
+           
+            function addNewPost(idnum)
+             {
+                
+                 var new_post = document.createElement("div");
+                 new_post.className = "post";
+                 var newTitle = document.createElement("div");
+                 newTitle.className = "title";
+                 var newMsg = document.createElement("div");
+                 newMsg.className = "msg";
+                 newTitle.textContent ="TITLE";
+                 newMsg.textContent ="MSG";
+                 
+                 new_post.appendChild(newTitle);
+                 new_post.appendChild(newMsg);
+                 new_post.id =idnum;
+                 update(idnum);
+                 $(new_post).hide();
+                 $("#post_box").append(new_post);
+                 $("#psection").height(function (index, height) {return (height + 150);});
+                 $(new_post).show(0);
+                 
+                
+             }
+             
+            function update(idnum)
+            {
+                  $.ajax({				
+                        url: root + '/posts/',
+						data: {
+							userId: inputid
+                            
+						},
+						type: "GET",
+                        dataType: "json",
+						success: function(data) {
+							if (data.Response == "False") {
+                                
+                                 console.log("false posts data");
+                            }
+							else {
+
+                                        $("#"+idnum+" .title").html("<p>"+ data[idnum-1].title + "</p>");
+                                        $("#"+idnum+" .msg").html("<p>"+ data[idnum-1].body+ "</p>");
+  
+							}
+						}
+             });
+            }
+           
+
+         });
+         
+
+          
+    </script>
+    <script>
+        var albumid = 1;
+        var photoid = 1;
+         $(document).ready(function() {
+       
+              var root = 'https://jsonplaceholder.typicode.com';
+              for(albumid=1;albumid <= 5; albumid++)
+            {
+                
+                updateAlbum(albumid);
+            }
+             
+              $(".more_album").click(function loadalbum()
+             {
+                 
+                 var i =1;
+                 if(albumid <10)
+                 for(i=1;i <= 5; i++)
+                {
+                  
+                    addNewAlbum(albumid); 
+                    albumid++;
+                   
+                }
+                
+                 $("html, body").animate({ scrollTop: 900}, "slow"); 
+             });
+             
+            
+             function addNewAlbum(albumid)
+             {
+                
+                 var new_album = document.createElement("div");
+                 new_album.className = "album";
+                 var new_atitle = document.createElement("div");
+                 new_atitle.className = "title_album";
+                 var new_photo = document.createElement("img");
+                 new_photo.className = "photo";
+                 new_album.appendChild(new_atitle);
+                 new_album.appendChild(new_photo);
+                 new_album.id ="a"+albumid;
+                 updateAlbum(albumid);
+                 $(new_album).hide();
+                 $("#album_box").append(new_album);
+                 $("#asection").height(function (index, height) {return (height + 80);});
+                 $(new_album).show(0);
+                 
+                 
+                
+             }
+             
+              function updateAlbum(albumid)
+            {
+                  $.ajax({				
+                        url: root + '/albums/',
+						data: {
+							userId: inputid
+                            
+						},
+						type: "GET",
+                        dataType: "json",
+						success: function(data) {
+							if (data.Response == "False") {
+                                
+                                 console.log("false albums data");
+                            }
+							else {
+                                $("#a"+albumid+" .title_album").html("<a href = photo.html#"+albumid+"@"+inputid+" ><p>"+ data[albumid-1].title + "</p></a>");
+                                
+                                updatePhoto(data[albumid-1].id,albumid);
+							}
+						}
+                    });
+               
+            }
+        
+        function updatePhoto(id, alid)
+        {
+             $.ajax({				
+                        url: root + '/photos/',
+						data: {
+							userId: id
+                            
+						},
+						type: "GET",
+                        dataType: "json",
+						success: function(data) {
+							if (data.Response == "False") {
+                                $("#title").html("<p>NOT A VALID PHOTO.</p>");
+								$("#a"+alid+" .photo").attr("src", "");
+                            }
+							else {
+                                 
+                                $("#a"+alid+" .photo").attr('src', data[id-1].thumbnailUrl);
+
+                                
+                               // $("#a"+albumid+" .photo").html(data[id-1].thumbnailUrl);
+							}
+						}
+                    });
+        }
+             
+      
+                               
+        });
+            
+    </script>
+    <script>
+        function loadMap()
+        {
+         
+          var root = 'https://jsonplaceholder.typicode.com';
+            var uluru = {lat:0.0,lng:0.0};
+            
+             $.ajax({				
+                        url: root + '/users/',
+						data: {
+							userId: inputid
+						},
+						type: "GET",
+                        dataType: "json",
+						success: function(data) {
+							if (data.Response == "False") {
+                                
+                                 console.log("false users data");
+                            }
+							else {
+                                uluru.lat = parseFloat(data[inputid-1].address.geo.lat);
+                                 uluru.lng =parseFloat( data[inputid-1].address.geo.lng);
+                               
+                                    var map = new google.maps.Map(document.getElementById('map'), {
+                                  zoom: 4,
+                                  center: uluru
+                                });
+                                var marker = new google.maps.Marker({
+                                  position: uluru,
+                                  map: map
+                                });
+                            
+							}
+						}
+             });
+            
+        }
+     
+           
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzmLn61q8DEN_waYLk5t3tVXCnJ_lcn48&callback=loadMap">
+    </script>
+    
+   	<body>
+        <div id = page>
+			<div class="header"> 
+            <a href="WEBPRG%20MP.html">
+                <div class="btn"> 
+                    <div>
+                        <img id="btn" src="posts.png"/>
+                    </div>
+                    <div style = "padding: 2.4;">
+                        <h1> Timeline </h1>
+                    </div>
+                </div>
+            </a>
+            <a href="homepage.html">
+                <div class="btn"> 
+                    <div style = "padding: 2.4;">
+                        <h1> Fishbook </h1>
+                    </div>
+                </div>
+            </a>
+            <a href="AllPhotos.html">
+                <div class="btn"> 
+                    <div>
+                        <img id="btn" src="planet.png"/>
+                    </div>
+                    <div style = "padding: 2.4;">
+                        <h1> Explore </h1>
+                    </div> 
+                </div>
+            </a>
+        </div>
+			<div class = full_container>
+				<div class = mydata>
+					<div class = name_container>
+                        <div class = name_text>Name</div>
+                        <div></div>
+                        <div class = uname>@username</div>
+                    
+                    </div>
+                
+                    
+                    <div id = info_container>
+                        <div class = listinfo>
+                            
+                                <div class = email ><span>Email : </span></div>
+                                <div class = phone ><span>Phone : </span></div>
+                                <div class = website ><span>Website : </span> </div>   
+                        </div> 
+                        
+                        <div class = add_container></div>	
+                        
+                        <div id = map></div>
+                        
+                        <div class = company_info>Company 
+                                <div class = cname>Company Name </div>
+                                <div class = cphrase >Catch Phrase</div>
+                                <div class = bs >BS:</div>  
+                        </div>
+       
+                    </div>
+				</div>
+					
+				
+				
+				
+				<div id = psection>
+					
+					<div id = post_container>
+                        <div id = post_box>
+                            <div class = post id = 1 >
+                                <div class =title>title</div>
+                                <div class =msg>msg</div> 
+                            </div>
+                            <div class = post id = 2>
+                                <div class =title>title</div>
+                                <div class =msg>msg</div> 
+                            </div>
+                            <div class = post id = 3 >
+                                <div class =title>title</div>
+                                <div class =msg>msg</div> 
+                            </div>
+                            <div class = post id = 4>
+                                <div class =title>title</div>
+                                <div class =msg>msg</div> 
+                            </div>
+                            <div class = post id = 5 >
+                                <div class =title>title</div>
+                                <div class =msg>msg</div> 
+                            </div>
+                        </div>
+                       
+                        
+						                      
+						<div class = more> <span>More posts</span> </div>
+					</div>
+				</div>
+				
+				<div id = asection>
+					
+					<div id = album_box>
+						<div class = album id = a1>
+                            <div class =title_album>title</div>
+                            <img class = photo>
+                        </div>
+                        <div class = album id = a2>
+                             <div class =title_album>title</div>
+                             <img class = photo>
+                        </div>
+                        <div class = album id = a3>
+                            <div class =title_album>title</div>
+                            <img class = photo>
+                        </div>
+                        <div class = album id = a4>
+                            <div class =title_album>title</div>
+                             <img class = photo>
+                        </div>
+                        <div class = album id = a5>
+                            <div class =title_album>title</div>
+                            <img class = photo>
+                        </div>
+					</div>
+                    <div class = more_album> More albums</div>
+			</div>
+          
+        </div>
+	</body>
+  
+</html>
